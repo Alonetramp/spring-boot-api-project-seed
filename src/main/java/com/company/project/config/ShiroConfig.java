@@ -1,4 +1,4 @@
-package com.company.project.configurer;
+package com.company.project.config;
 
 import com.company.project.realm.Realm;
 import org.apache.shiro.mgt.SecurityManager;
