@@ -2,15 +2,16 @@ package com.company.project.realm;
 
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -35,24 +36,27 @@ public class Realm extends AuthorizingRealm {
 	 */
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+		//若是使用了分页,这里不要查询数据库,会导致分页作用再这里
 //		String username = (String) principals.getPrimaryPrincipal();
-//		if (username == null) {
-//			throw new AuthenticationException("token invalid");
-//		}
+		String username = "joker";
+		if (username == null) {
+			throw new AuthenticationException("token invalid");
+		}
 //		List<Role> roles = (List<Role>) SecurityUtils.getSubject().getSession().getAttribute("roles");
-//		SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
-//		Set<String> permissionRoles = new HashSet<>();
-//		for(Role role:roles){
-//			permissionRoles.add(role.getName());
-//			List<Menu> menuList=menuRepository.findByRoleId(role.getId());
-//			for(Menu menu:menuList){
-//				simpleAuthorizationInfo.addStringPermission(menu.getName()); // 添加权限
-//			}
-//		}
-//		simpleAuthorizationInfo.setRoles(permissionRoles);
-//		return simpleAuthorizationInfo;
-
-		return null;
+		List<String> roles = new ArrayList<>();
+		roles.add("god");
+		SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+		Set<String> permissionRoles = new HashSet<>();
+		for(String role:roles){
+			permissionRoles.add(role);
+			List<String> permissions = new ArrayList<>();
+			permissions.add("STW");
+			for(String permission:permissions){
+				simpleAuthorizationInfo.addStringPermission(permission); // 添加权限
+			}
+		}
+		simpleAuthorizationInfo.setRoles(permissionRoles);
+		return simpleAuthorizationInfo;
 	}
 
 	/**
@@ -60,22 +64,20 @@ public class Realm extends AuthorizingRealm {
 	 */
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) {
-//		String username = (String)auth.getPrincipal();
-//		if (username == null) {
-//			throw new AuthenticationException("token invalid");
-//		}
-//		UserRoleDTO userRoleDTO = userRoleService.findByUsername(username);
-//		if (userRoleDTO == null) {
-//			throw new UnknownAccountException("User didn't existed!");
-//		}
-//		Session session = SecurityUtils.getSubject().getSession();
-//		session.setAttribute("uid",userRoleDTO.getId());
-//		session.setAttribute("username",userRoleDTO.getUsername());
-//		session.setAttribute("companyId",userRoleDTO.getCompanyId());
-//		session.setAttribute("roles",userRoleDTO.getRoleList());
-//		return new SimpleAuthenticationInfo(userRoleDTO.getAccount(),userRoleDTO.getPassword(),"xxx");
-
-		return null;
+		String username = (String)auth.getPrincipal();
+		if (username == null) {
+			throw new AuthenticationException("token invalid");
+		}
+//		UserRole userRoleDTO = userRoleService.findByUsername(username);
+		String userRole = new String();
+		if (userRole == null) {
+			throw new UnknownAccountException("User didn't existed!");
+		}
+		Session session = SecurityUtils.getSubject().getSession();
+		session.setAttribute("uid",1);
+		session.setAttribute("username","joker");
+		session.setAttribute("roles","god");
+		return new SimpleAuthenticationInfo("admin","admin","xxx");
 	}
 
 }
